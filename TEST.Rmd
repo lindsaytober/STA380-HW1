@@ -1,0 +1,105 @@
+---
+title: "TEST"
+author: "Liuxuan (Kelly) Yu and Lindsay Tober"
+date: "August 8, 2016"
+output: html_document
+fig_caption: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# STA 380 Homework 1
+
+
+## Market segmentation
+
+A market-research study was completed based on tweets of followers of  NutrientH20 Twitter account, where they had an advertising firm analyze tweets of its followers over a seven day period in June 2014 so as to to explain its social-media audence in order to better hone its audience.  Initial categorization was completed on the tweets to assign them different labels.  For example, a hypothetical post such as "I'm really excited to see grandpa go wreck shop in his geriatic soccer league this Sunday!" might be categorized as both "family" and "sports."
+
+```{r include=FALSE}
+# Setup
+library(wordcloud)
+library(textir)
+library(flexclust)
+library(pander)
+library(mosaic)
+
+# Market-research study using followers of Consumer Brand Twitter account
+marketsegmentation <- read.csv("social_marketing.csv", row.names=1)
+head(marketsegmentation)
+summary(marketsegmentation)
+
+# Scaling the data
+marketsegmentation_scaled <- scale(marketsegmentation, center=TRUE, scale=TRUE) 
+
+# K-means clustering
+marketsegmentation_cluster <- kmeans(marketsegmentation_scaled, centers = 5)
+marketsegmentation_cluster$centers
+marketsegmentation_cluster$cluster
+
+# Plot K-means
+plot(marketsegmentation_scaled[,"family"], marketsegmentation_scaled[,"shopping"],
+    type="n", xlab="Family", ylab="Shopping")
+text(marketsegmentation_scaled[,"family"], marketsegmentation_scaled[,"shopping"], #
+    labels=rownames(marketsegmentation), 
+    col=rainbow(3)[marketsegmentation_cluster$cluster]) 
+
+
+# All centroids
+#important_terms<-print(apply(kmeans_marketsegmentation$centers,1,function(x) colnames(Z)[order(x, decreasing=TRUE)[1:10]]))
+
+## K-means++
+# Scaled per-document phrase frequencies
+marketsegmentation_freq = marketsegmentation/rowSums(marketsegmentation)
+Z = scale(marketsegmentation_freq)
+
+# Run K-means
+kmeans_marketsegmentation <- kmeans(Z, 5)  
+
+
+# All centroids
+#important_terms<-print(apply(kmeans_marketsegmentation$centers,1,function(x) colnames(Z)[order(x, decreasing=TRUE)[1:10]]))
+
+# A word cloud
+#wordcloud(colnames(Z), kmeans_marketsegmentation$centers[2,], min.freq=0, max.words=100)
+
+```
+
+Using K-means clustering, we segmented NutrientH20's Twitter followers into 5 clusters and gathered the top categories for each cluster:
+
+<center>
+**Table 2:** Top 10 categories by cluster of twitter followers for NutrientH20.
+</center>
+</br>
+
+      1                 2                 3                 4               5                 
+ [1,] "dating"          "online_gaming"   "tv_film"         "photo_sharing" "health_nutrition"
+ [2,] "school"          "college_uni"     "art"             "chatter"       "personal_fitness"
+ [3,] "fashion"         "sports_playing"  "music"           "shopping"      "food"            
+ [4,] "chatter"         "art"             "small_business"  "politics"      "religion"        
+ [5,] "uncategorized"   "spam"            "uncategorized"   "automotive"    "parenting"       
+ [6,] "beauty"          "family"          "current_events"  "news"          "outdoors"        
+ [7,] "home_and_garden" "small_business"  "college_uni"     "computers"     "sports_fandom"   
+ [8,] "business"        "adult"           "crafts"          "travel"        "school"          
+ [9,] "small_business"  "home_and_garden" "home_and_garden" "fashion"       "family"          
+[10,] "crafts"          "tv_film"         "business"        "cooking"       "eco"    
+
+
+From this summary, we can 
+      | 1                 | 2                 | 3                 | 4               | 5                
+----- | ----------------- | ----------------- | ----------------  | --------------- | --------  
+ [1,] |"dating"           | "online gaming"   | "tv film"         | "photo sharing" | "health nutrition"
+ [2,] |"school"           | "college uni"     | "art"             | "chatter"       | "personal_fitness"
+ [3,] |"fashion"         "sports playing"  "music"           "shopping"      "food"            
+ [4,] |"chatter"         "art"             "small business"  "politics"      "religion"        
+ [5,] | "uncategorized"   "spam"            "uncategorized"   "automotive"    "parenting"       
+ [6,] | "beauty"          "family"          "current events"  "news"          "outdoors"        
+ [7,] "home and garden" "small business"  "college uni"     "computers"     "sports_fandom"   
+ [8,] "business"        "adult"           "crafts"          "travel"        "school"          
+ [9,] "small business"  "home and garden" "home and garden" "fashion"       "family"          
+[10,] "crafts"          "tv film"         "business"        "cooking"       "eco"    
+
+
+From this summary, we can 
+
